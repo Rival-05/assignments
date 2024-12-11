@@ -16,6 +16,67 @@
   Once you've implemented the logic, test your code by running
 */
 
-class Calculator {}
+class Calculator {
+    constructor() {
+        this.result = 0;
+    }
+
+    add(number) {
+        this.result += number;
+    }
+
+    subtract(number) {
+        this.result -= number;
+    }
+
+    multiply(number) {
+        this.result *= number;
+    }
+
+    divide(number) {
+        if (number === 0) {
+            throw new Error("Division by zero is not allowed.");
+        }
+        this.result /= number;
+    }
+
+    clear() {
+        this.result = 0;
+    }
+
+    getResult() {
+        return this.result;
+    }
+
+    calculate(expression) {
+        try {
+            // Remove extra spaces and validate the input
+            const sanitizedExpression = expression.replace(/\s+/g, '');
+
+            // Check for invalid characters
+            if (!/^[-+*/().0-9]+$/.test(sanitizedExpression)) {
+                throw new Error("Invalid characters in the expression.");
+            }
+
+            // Check for mismatched parentheses
+            const openParentheses = (sanitizedExpression.match(/\(/g) || []).length;
+            const closeParentheses = (sanitizedExpression.match(/\)/g) || []).length;
+            if (openParentheses !== closeParentheses) {
+                throw new Error("Mismatched parentheses in the expression.");
+            }
+
+            // Evaluate the sanitized expression
+            const evaluatedResult = eval(sanitizedExpression);
+            if (!isFinite(evaluatedResult)) {
+                throw new Error("Division by zero detected in the expression.");
+            }
+
+            this.result = evaluatedResult;
+            return this.result;
+        } catch (error) {
+            throw new Error("Invalid expression or calculation error: " + error.message);
+        }
+    }
+}
 
 module.exports = Calculator;
