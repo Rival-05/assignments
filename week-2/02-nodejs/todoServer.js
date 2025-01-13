@@ -46,4 +46,84 @@
   
   app.use(bodyParser.json());
   
+  let todos = [];
+
+  const generateId = ()=>{
+    return Date.now();
+  }
+  
+  app.get('/todos', (req,res)=>{
+    res.status(200).json(todos);
+  })
+
+  app.get('/todos/:id', (req,res)=>{
+    const {id} = req.params;
+    const todo = todos.find((t) =>t.id === Number(id));
+    if(!todo){
+      res.status(404).json({
+      msg: "Todo not found."
+      })
+    }
+    res.status(200).json(todo);    
+  })
+
+  app.post('/todos', (req,res)=>{
+    const {title,description} = req.body;
+    if(!title || !description){
+      res.status(400).json({
+        msg: "Need Title and description both to create a new todo."
+      })
+    }
+    const newTodo={
+      id: generateId() ,
+      title: title,
+      description : description,
+      completed:false      
+    }
+    todos.push(newTodo);
+    res.status(201).json({
+      msg: "Created a new todo.",
+      id: newTodo.id
+    })
+  })
+
+  app.put('/todos/:id', (req,res)=>{
+    const {id} = req.params;
+    const {title,completed,description} = req.body;
+    if(!title || !description){
+      res.status(400).json({
+        msg: "Need Title and description to update the todo."
+      })
+    }
+    const todoIndex = todos.findIndex((t) => t.id === Number(id));
+    if(todoIndex === -1){
+      res.status(404).json({
+      msg: "Todo not found."
+      })
+    }
+    todos[todoIndex]={
+      id : todos[todoIndex].Id,
+      title: title,
+      description: description,
+      completed : completed ?? todos[todoIndex].Completed      
+    }
+    res.status(200).json({
+      msg: "Todo Updated."   
+    })
+  })
+
+
+  app.delete('/todos/:id', (req,res)=>{
+    const {id} = req.params;
+    const todoIndex = todos.findIndex((t) => t.id === Number(id));
+    if(todoIndex === -1){
+      res.status(404).json({
+      msg: "Todo not found."
+      })
+    }
+    todos.splice(todoIndex,1);
+    res.status(200).json({
+      msg: "Todo Removed from the list."
+    })
+  })
   module.exports = app;
