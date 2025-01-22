@@ -71,7 +71,7 @@
     const {title,description} = req.body;
     if(!title || !description){
       res.status(400).json({
-        msg: "Need Title and description both to create a new todo."
+        msg: "Need Title and description (both) to create a new todo."
       })
     }
     const newTodo={
@@ -90,9 +90,9 @@
   app.put('/todos/:id', (req,res)=>{
     const {id} = req.params;
     const {title,completed,description} = req.body;
-    if(!title || !description){
+    if(!title && !description){
       res.status(400).json({
-        msg: "Need Title and description to update the todo."
+        msg: "Need Title or description to update the todo."
       })
     }
     const todoIndex = todos.findIndex((t) => t.id === Number(id));
@@ -102,10 +102,10 @@
       })
     }
     todos[todoIndex]={
-      id : todos[todoIndex].Id,
-      title: title,
-      description: description,
-      completed : completed ?? todos[todoIndex].Completed      
+      id : todos[todoIndex].id,
+      ...(title !== undefined && {title:title}),
+      ...(description !== undefined && {description: description}),
+      completed : completed ?? todos[todoIndex].completed      
     }
     res.status(200).json({
       msg: "Todo Updated."   
