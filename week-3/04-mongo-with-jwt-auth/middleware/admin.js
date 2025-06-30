@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const {jwtsecret} = require("../config");
+const {jwtSecret} = require("../config");
 // Middleware for handling auth
 function adminMiddleware(req, res, next) {
     // Implement admin auth logic
@@ -8,15 +8,21 @@ function adminMiddleware(req, res, next) {
     const token = req.headers.authorization;
     const realToken = token.split(" ");
     const jwtToken = realToken[1];
-    
-    const verified = jwt.verify(jwtToken,jwtsecret);
-    if(verified.username){
-        next();
-    }else{
-        res.status(403).json({
-            msg:"Username or Password invalid."
+    try{
+        const verified = jwt.verify(jwtToken,jwtSecret);
+        if(verified.username){
+            next();
+        }else{
+            res.status(403).json({
+                msg:"Username or Password invalid."
+            })
+        }
+    }catch(e){
+        res.json({
+            msg: "Incorrect inputs."
         })
     }
+    
 }
 
 module.exports = adminMiddleware;
